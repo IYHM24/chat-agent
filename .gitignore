@@ -4,6 +4,9 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
+##Confidencial
+Docs/matrix/
+
 # Build outputs
 dist/
 build/

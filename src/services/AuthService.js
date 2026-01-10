@@ -4,6 +4,17 @@ import { localStorageKeys } from "../config/variables.js";
 
 class AuthService {
     
+    getUserInfo = () =>{
+        const token = getTokenStorage(localStorageKeys.tokenAuth);
+        if (!token) return null;
+
+        // Decodificar el token JWT para obtener la información del usuario
+        const payloadBase64 = token.split('.')[1];
+        const payloadJson = atob(payloadBase64);
+        const payload = JSON.parse(payloadJson);
+        return payload;
+    }
+
     isLogged = () => {
         const token = getTokenStorage(localStorageKeys.tokenAuth);
         return token !== null;

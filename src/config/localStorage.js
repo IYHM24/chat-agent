@@ -8,3 +8,8 @@ export const setTokenStorage = (key, value) => {
 export const getTokenStorage = (key) => {
     return localStorage.getItem(key);
 }
+
+/* remover un valor de localStorage */
+export const removeTokenStorage = (key) => {
+    localStorage.removeItem(key);
+}

@@ -23,13 +23,32 @@ const MainMenu = () => {
     //Abrir modal de carga de documentos - Cargar producto
     ModalCargaDocumentos(
         "Cargar productos desde Excel", excelTemplate,
+        { accept: ".xlsx,.xls,.csv" },
         async (data) => {
             //Envio de datos al Backend
             const fixedDataResult = fixedData(data);
-            const response = await ExcelService.InsertarProductos(fixedDataResult)
+
+            const response = await ExcelService.InsertarProductos(fixedDataResult).catch(err => {
+                if(err && err.response && err.response.status === 401){
+                    // Token inválido o expirado, manejar cierre de sesión
+                    removeTokenStorage(localStorageKeys.tokenAuth);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Sesión expirada',
+                        text: 'Por favor, inicia sesión nuevamente.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            });
+            
             if (response && response.success) {
                 await Swal.fire({ icon: 'success', title: 'Documento cargado con exito!', timer: 1500, showConfirmButton: false });
             }
+            else {
+                await Swal.fire({ icon: 'error', title: 'Error al cargar el documento', text: response.message || 'Inténtalo de nuevo.' });
+            }
+
         },
         (err) => { console.error('Error en carga de documentos', err); }
         , null, ValidarProducto
@@ -71,14 +90,14 @@ const configButtons = () => {
     if (settingsBtn) {
         settingsBtn.addEventListener('click', () => {
             const isLogged = AuthService.isLogged();
-            
+
             if (isLogged) {
                 // Si el menú ya está abierto, cerrarlo
                 if (isMenuOpen()) {
                     closeMenuConfiguracion();
                     return;
                 }
-                
+
                 // Mostrar menú desplegable de configuración
                 createMenuConfiguracion({
                     onCargarProductos: () => {
@@ -96,7 +115,7 @@ const configButtons = () => {
                         //Establecer el token de autenticación
                         const token = response.token;
                         setTokenAuth(token);
-                        
+
                         // Mostrar menú desplegable después de autenticarse
                         createMenuConfiguracion({
                             onCargarProductos: () => {

@@ -3,6 +3,7 @@ import { validateContractExcel } from '../utils/excelValidator.js';
 export const ModalCargaDocumentos = (
     title = "Cargar archivo Excel",
     excelTemplate = null,
+    optionsInput = { accept: ".xlsx,.xls,.csv" },
     funExito,
     funError = () => { },
     sheetName = null,
@@ -21,8 +22,8 @@ export const ModalCargaDocumentos = (
                 <p>Para obtener la plantilla de carga, haz clic <a href="${excelTemplate == null ? '#' : excelTemplate}" target="_blank" class="text-red-500 underline">aquí</a>.</p>
               </div>
               <div id="drop-zone" style="min-height:120px;" class="border-2 border-dashed  border-gray-400 rounded p-4 flex flex-col items-center justify-center text-sm">
-                <div id="dz-text" class="text-white">Arrastra el archivo aquí o haz clic para seleccionar (.xlsx, .xls, .csv)</div>
-                <input id="file-input" type="file" accept=".xlsx,.xls,.csv" style="display:none" />
+                <div id="dz-text" class="text-white">Arrastra el archivo aquí o haz clic para seleccionar (${optionsInput.accept})</div>
+                <input id="file-input" type="file" accept="${optionsInput.accept}" style="display:none" />
               </div>
             `,
             showCancelButton: true,
@@ -69,13 +70,20 @@ export const ModalCargaDocumentos = (
                 const input = popup.querySelector('#file-input');
                 const file = (input.files && input.files[0]) || droppedFile;
                 if (!file) {
-                    Swal.showValidationMessage('Selecciona un archivo Excel');
+                    Swal.showValidationMessage('Selecciona un archivo');
                     return false;
                 }
-                const name = (file.name || '').toLowerCase();
-                if (!/\.(xlsx|xls|csv)$/i.test(name)) {
-                    Swal.showValidationMessage('Solo se permiten archivos Excel (.xlsx, .xls, .csv)');
-                    return false;
+
+                // Verificar si es modo Excel o modo genérico
+                const isExcelMode = optionsInput.accept && /xlsx|xls|csv/i.test(optionsInput.accept);
+
+                if (isExcelMode) {
+                    // Validar extensión para Excel
+                    const name = (file.name || '').toLowerCase();
+                    if (!/\.(xlsx|xls|csv)$/i.test(name)) {
+                        Swal.showValidationMessage('Solo se permiten archivos Excel (.xlsx, .xls, .csv)');
+                        return false;
+                    }
                 }
 
                 return new Promise((res, rej) => {
@@ -86,62 +94,64 @@ export const ModalCargaDocumentos = (
                     reader.onload = (e) => {
                         try {
                             const data = new Uint8Array(e.target.result);
-                            const workbook = XLSX.read(data, { type: 'array' });
-                            
-                            let result = [];
-                            
-                            // Si se especificó sheetName, usar solo esa hoja
-                            if (sheetName) {
-                                if (workbook.SheetNames.includes(sheetName)) {
-                                    const worksheet = workbook.Sheets[sheetName];
-                                    const json = XLSX.utils.sheet_to_json(worksheet, { defval: null });
-                                    // Agregar la propiedad 'familia' a cada registro
-                                    result = json.map(row => ({
-                                        ...row,
-                                        familia: sheetName
-                                    }));
+
+                            // Si es modo Excel, procesar con XLSX
+                            if (isExcelMode) {
+                                const workbook = XLSX.read(data, { type: 'array' });
+                                
+                                let result = [];
+                                
+                                // Si se especificó sheetName, usar solo esa hoja
+                                if (sheetName) {
+                                    if (workbook.SheetNames.includes(sheetName)) {
+                                        const worksheet = workbook.Sheets[sheetName];
+                                        const json = XLSX.utils.sheet_to_json(worksheet, { defval: null });
+                                        // Agregar la propiedad 'familia' a cada registro
+                                        result = json.map(row => ({
+                                            ...row,
+                                            familia: sheetName
+                                        }));
+                                    } else {
+                                        rej(new Error(`Hoja no encontrada: ${sheetName}`));
+                                        return;
+                                    }
                                 } else {
-                                    rej(new Error(`Hoja no encontrada: ${sheetName}`));
+                                    // Capturar de todas las hojas
+                                    workbook.SheetNames.forEach(shName => {
+                                        const worksheet = workbook.Sheets[shName];
+                                        const json = XLSX.utils.sheet_to_json(worksheet, { defval: null });
+                                        // Agregar la propiedad 'familia' a cada registro
+                                        const dataWithFamilia = json.map(row => ({
+                                            ...row,
+                                            familia: shName
+                                        }));
+                                        result = result.concat(dataWithFamilia);
+                                    });
+                                }
+                                
+                                // Validar datos del Excel si se especificó función de validación
+                                const validacion = funValidacion ? funValidacion(result) : { valid: true };
+                                if (!validacion.valid) {
+                                    let errorMsg = validacion.message + '\n\n';
+                                    validacion.errors.forEach(error => {
+                                        errorMsg += `• ${error.message || error}\n`;
+                                    });
+                                    rej(new Error(errorMsg));
                                     return;
                                 }
+                                
+                                res(result);
                             } else {
-                                // Capturar de todas las hojas
-                                workbook.SheetNames.forEach(shName => {
-                                    const worksheet = workbook.Sheets[shName];
-                                    const json = XLSX.utils.sheet_to_json(worksheet, { defval: null });
-                                    // Agregar la propiedad 'familia' a cada registro
-                                    const dataWithFamilia = json.map(row => ({
-                                        ...row,
-                                        familia: shName
-                                    }));
-                                    result = result.concat(dataWithFamilia);
+                                // Modo genérico: retornar los bytes del archivo
+                                res({
+                                    file: file,
+                                    name: file.name,
+                                    size: file.size,
+                                    type: file.type,
+                                    data: data,
+                                    arrayBuffer: e.target.result
                                 });
                             }
-                            
-                            const validacion = funValidacion ? funValidacion(result) : { valid: true };
-                            if (!validacion.valid) {
-                                let errorMsg = validacion.message + '\n\n';
-                                validacion.errors.forEach(error => {
-                                    errorMsg += `• ${error}\n`;
-                                });
-                                rej(new Error(errorMsg));
-                                return;
-                            }
-
-                            /* Reemplazar por validacion de funcion funValidacion  */
-                            // Validar que todas las hojas tengan las columnas requeridas
-                            //const validation = validateContractExcel(result);
-                            
-                            //if (!validation.valid) {
-                            //    let errorMsg = validation.message + '\n\n';
-                            //    validation.errors.forEach(error => {
-                            //        errorMsg += `• ${error.message}\n`;
-                            //    });
-                            //    rej(new Error(errorMsg));
-                            //    return;
-                            //}
-                            
-                            res(result);
                         } catch (err) {
                             rej(err);
                         }

@@ -100,7 +100,6 @@ const configPopUpButton = () => {
                         //Establecer el token de autenticación
                         const token = response.token;
                         setTokenAuth(token);
-
                         // Mostrar menú desplegable después de autenticarse
                         createMenuConfiguracion();
                     },

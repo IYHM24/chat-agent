@@ -8,8 +8,10 @@ import { configPopUpButton } from "./src/components/MenuActions.js";
 
 
 const configButtons = () => {
+
     //Configuracion del Popup del boton de configuracion
     configPopUpButton();
+    
 }
 
 /***

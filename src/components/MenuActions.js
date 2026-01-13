@@ -114,6 +114,7 @@ const configPopUpButton = () => {
 }
 
 export {
+    editMenuOption,
     configPopUpButton,
     OptionsMenu
 }

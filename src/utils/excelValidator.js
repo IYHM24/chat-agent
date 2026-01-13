@@ -291,11 +291,6 @@ export const ValidarProducto = (data) => {
 export const ValidarDathasheets = (data) => {
     
     // Validación general
-    const validacionGeneral = ValidacionGeneral(data, REQUIRED_PRODUCT_COLUMNS, NO_EMPTY_PRODUCT_COLUMNS);
-    if (!validacionGeneral.valid) {
-        return validacionGeneral;
-    }
-
     return { valid: true, errors: [], message: "El Excel de productos es válido" };
 }
 

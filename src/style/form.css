@@ -10,5 +10,6 @@
     background-image: url("../img/wexler.png");
 }
 #logo-fortinet {
+    transform: scale(2);
     background-image: url("../img/fortinet.png");
 }

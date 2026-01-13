@@ -4,6 +4,10 @@ import { localStorageKeys } from "../config/variables.js";
 
 class AuthService {
     
+    /**
+     * obtener información del usuario desde el token almacenado
+     * @returns 
+     */
     getUserInfo = () =>{
         const token = getTokenStorage(localStorageKeys.tokenAuth);
         if (!token) return null;
@@ -15,6 +19,10 @@ class AuthService {
         return payload;
     }
 
+    /**
+     * Validar si el usuario está logueado
+     * @returns 
+     */
     isLogged = () => {
         const token = getTokenStorage(localStorageKeys.tokenAuth);
         return token !== null;

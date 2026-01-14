@@ -94,15 +94,15 @@ const createMessageBubble = (message, type = 'user') => {
   const bubbleStyles = {
     user: {
       container: 'text-right',
-      bubble: 'inline-block bg-red-600 text-white px-4 py-2 rounded-2xl shadow-md'
+      bubble: 'inline-block bg-red-600 text-white px-4 py-2 rounded-2xl shadow-md whitespace-pre-wrap break-words'
     },
     agent: {
       container: 'text-left',
-      bubble: 'inline-block bg-gray-800 text-gray-200 px-4 py-2 rounded-2xl border border-red-600'
+      bubble: 'inline-block bg-gray-800 text-gray-200 px-4 py-2 rounded-2xl border border-red-600 whitespace-pre-wrap break-words'
     },
     error: {
       container: 'text-left',
-      bubble: 'text-red-400 italic'
+      bubble: 'text-red-400 italic whitespace-pre-wrap break-words'
     }
   };
 

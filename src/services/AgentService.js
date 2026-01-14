@@ -6,6 +6,7 @@ class AgentService {
     
     constructor() {
         this.agentName = getGlobalVariable('agentName') || 'Armando';
+        this.maxMessages = 20; // Límite total de mensajes (1 system + 19 user/assistant)
         // No llamar configChat aquí para evitar dependencia circular
     }
 
@@ -66,12 +67,41 @@ class AgentService {
     }
 
     /**
+     * Optimiza el array de mensajes usando sliding window
+     * Mantiene el mensaje system + últimos N mensajes de user/assistant
+     * @param {Array} messages - Array de mensajes a optimizar
+     * @returns {Array} - Array optimizado
+     */
+    optimizeMessages = (messages) => {
+        // Separar mensaje system de los demás
+        const systemMessages = messages.filter(msg => msg.role === 'system');
+        const conversationMessages = messages.filter(msg => msg.role !== 'system');
+
+        // Si no superamos el límite, retornar todos
+        if (messages.length <= this.maxMessages) {
+            return messages;
+        }
+
+        // Calcular cuántos mensajes de conversación mantener
+        const maxConversationMessages = this.maxMessages - systemMessages.length;
+        
+        // Tomar solo los últimos N mensajes de la conversación
+        const recentMessages = conversationMessages.slice(-maxConversationMessages);
+
+        // Retornar: system messages + mensajes recientes
+        return [...systemMessages, ...recentMessages];
+    }
+
+    /**
      * Pregunta al agente
      * @param {Array} Message 
      * @returns {Array} Message 
      */
     generateAgentResponse = async (Message) => {
-        const response = await httpService.post('/agent/ask', Message );
+        // Optimizar mensajes antes de enviar
+        const optimizedMessages = this.optimizeMessages(Message);
+        
+        const response = await httpService.post('/agent/ask', optimizedMessages);
         return response.data.data;
     }
 

@@ -11,6 +11,7 @@ export const localStorageKeys = {
  */
 export const initVariales = () => {
   window.apiUrl = "http://localhost:3000/api/v1";
+  window.agentName = "Ramirez";
 }
 
 /**

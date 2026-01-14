@@ -1,7 +1,7 @@
 import { httpService } from "../config/fetch.js";
 
 class ExcelService {
-    
+
     /**
      * Login de usuario
      * @param {string} Usuario 
@@ -11,6 +11,18 @@ class ExcelService {
     async InsertarProductos(Productos) {
         // Lógica de autenticación (simulada aquí)
         const response = await httpService.post('/product/insertar/masivo', Productos);
+        return response.data;
+    }
+
+    /**
+     * Login de usuario
+     * @param {string} Usuario 
+     * @param {string} Credencial 
+     * @returns 
+     */
+    async InsertarDatasheets(Datasheets) {
+        // Lógica de autenticación (simulada aquí)
+        const response = await httpService.post('/datasheet/insertar/masivo', Datasheets);
         return response.data;
     }
 

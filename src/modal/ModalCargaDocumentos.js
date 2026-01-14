@@ -101,13 +101,27 @@ export const ModalCargaDocumentos = (
                                 
                                 let result = [];
                                 
+                                // Función helper para limpiar espacios de todas las propiedades
+                                const trimObjectValues = (obj) => {
+                                    const trimmed = {};
+                                    for (const key in obj) {
+                                        const value = obj[key];
+                                        if (typeof value === 'string') {
+                                            trimmed[key.trim()] = value.trim();
+                                        } else {
+                                            trimmed[key.trim()] = value;
+                                        }
+                                    }
+                                    return trimmed;
+                                };
+                                
                                 // Si se especificó sheetName, usar solo esa hoja
                                 if (sheetName) {
                                     if (workbook.SheetNames.includes(sheetName)) {
                                         const worksheet = workbook.Sheets[sheetName];
                                         const json = XLSX.utils.sheet_to_json(worksheet, { defval: null });
-                                        // Agregar la propiedad 'familia' a cada registro
-                                        result = json.map(row => ({
+                                        // Agregar la propiedad 'familia' a cada registro y aplicar trim
+                                        result = json.map(row => trimObjectValues({
                                             ...row,
                                             familia: sheetName
                                         }));
@@ -120,8 +134,8 @@ export const ModalCargaDocumentos = (
                                     workbook.SheetNames.forEach(shName => {
                                         const worksheet = workbook.Sheets[shName];
                                         const json = XLSX.utils.sheet_to_json(worksheet, { defval: null });
-                                        // Agregar la propiedad 'familia' a cada registro
-                                        const dataWithFamilia = json.map(row => ({
+                                        // Agregar la propiedad 'familia' a cada registro y aplicar trim
+                                        const dataWithFamilia = json.map(row => trimObjectValues({
                                             ...row,
                                             familia: shName
                                         }));

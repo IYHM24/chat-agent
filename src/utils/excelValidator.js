@@ -1,4 +1,5 @@
 import { REQUIRED_PRODUCT_COLUMNS, NO_EMPTY_PRODUCT_COLUMNS } from "../config/columnasExcel.js";
+import { REQUIRED_DATASHEET_COLUMNS } from "../config/columnasExcel.js";
 
 /**
  * Valida que los datos del Excel contengan las columnas requeridas
@@ -288,10 +289,15 @@ export const ValidarProducto = (data) => {
  * @param {Array} data - Array de objetos del Excel
  * @returns {Object} { valid: boolean, errors: Array, message: string }
  */
-export const ValidarDathasheets = (data) => {
-    
+export const ValidarDatasheets = (data) => {
+
     // Validación general
-    return { valid: true, errors: [], message: "El Excel de productos es válido" };
+    const validacionGeneral = ValidacionGeneral(data, REQUIRED_DATASHEET_COLUMNS, []);
+    if (!validacionGeneral.valid) {
+        return validacionGeneral;
+    }
+
+    return { valid: true, errors: [], message: "El Excel de datasheets es válido" };
 }
 
 

@@ -1,6 +1,6 @@
 //Componentes y funciones
 import { settingsBtn } from "./ComponentesFormulario.js";
-import { CargarProducto, handleCerrarSesion } from "./MenuActions.fun.js";
+import { CargarProducto, handleCerrarSesion, CargarDatasheet } from "./MenuActions.fun.js";
 import { ModalAutenticacion } from "../modal/ModalAutenticacion.js";
 import { setTokenAuth } from "../config/fetch.js";
 import {
@@ -36,7 +36,7 @@ const OptionsMenu = [
             </svg>
         `,
         action: () => {
-            alert("Funcionalidad en desarollo"); // Implementar función de cargar datasheets
+            CargarDatasheet(); // Implementar función de cargar datasheets
         },
     },
     {

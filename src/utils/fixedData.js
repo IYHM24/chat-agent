@@ -1,4 +1,4 @@
-export const fixedData = (data) => {
+export const fixedDataProductos = (data) => {
     return data.map(row => (
         {
             UNIT: row.UNIT || 'N/A',
@@ -11,4 +11,11 @@ export const fixedData = (data) => {
             Familia: row.familia
         }
     ));
+}
+
+export const fixedDataDatasheets = (data) => {
+    return data.map(row => {
+        delete row.familia; // Eliminar propiedad innecesaria
+        return row;
+    });
 }

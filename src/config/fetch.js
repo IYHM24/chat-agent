@@ -5,11 +5,11 @@ import {setTokenStorage} from './localStorage.js';
  * Configuración base para fetch
  */
 const BASE_URL = getGlobalVariable('apiUrl') || 'http://localhost:3000/api/v1';
-const TIMEOUT = 30000;
+const TIMEOUT = 3600000;
 
 let authToken = null;
 
-/**
+/**s
  * Establece el token de autenticación
  * @param {string} token - Token de autorización
  */

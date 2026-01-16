@@ -4,8 +4,15 @@ import {setTokenStorage} from './localStorage.js';
 /**
  * Configuración base para fetch
  */
-const BASE_URL = getGlobalVariable('apiUrl') || 'http://localhost:3000/api/v1';
 const TIMEOUT = 3600000;
+
+/**
+ * Obtiene la URL base de la API
+ * @returns {string}
+ */
+const getBaseUrl = () => {
+    return getGlobalVariable('apiUrl') || 'http://192.168.2.9:3000/api/v1';
+};
 
 let authToken = null;
 
@@ -48,7 +55,7 @@ const fetchWithTimeout = async (url, options = {}) => {
     const timeout = setTimeout(() => controller.abort(), TIMEOUT);
 
     try {
-        const response = await fetch(`${BASE_URL}${url}`, {
+        const response = await fetch(`${getBaseUrl()}${url}`, {
             ...options,
             signal: controller.signal
         });

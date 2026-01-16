@@ -10,7 +10,7 @@ export const localStorageKeys = {
  * Inicializa las variables globales en el objeto window
  */
 export const initVariales = () => {
-  window.apiUrl = "http://localhost:3000/api/v1";
+  window.apiUrl = "http://192.168.2.9:3000/api/v1";
   window.agentName = "Ramirez";
 }
 

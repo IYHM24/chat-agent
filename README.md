@@ -1,5 +1,11 @@
 # 📐 Asistente Fortinet - Sistema de Gestión de Productos
 
+**Descripción corta:** Aplicación web para gestión y carga masiva de productos Fortinet (Excel) con autenticación, validación y chatbot.
+
+**Última actualización:** 2026-01-16
+
+**Mantenedor:** Equipo Nycolt
+
 ## 📋 Descripción General
 Aplicación web para la gestión y carga masiva de productos Fortinet mediante archivos Excel, con sistema de autenticación, validación avanzada de datos y chatbot integrado para asesoría de productos.
 
